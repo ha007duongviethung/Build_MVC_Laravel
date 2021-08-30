@@ -1,6 +1,6 @@
 <?php 
 
-define('_DIR_ROOT', __DIR__);
+define('_DIR_ROOT', str_replace('\\', '/', __DIR__));
 
 // Xu ly http root
 if(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
@@ -9,7 +9,7 @@ if(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
 	$web_root = 'http://' . $_SERVER['HTTP_HOST'];
 }
 
-$folder = str_replace(strtolower(str_replace('/', '\\', $_SERVER['DOCUMENT_ROOT'])), '', strtolower(_DIR_ROOT));
+$folder = str_replace(strtolower(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'])), '', strtolower(str_replace('\\', '/', _DIR_ROOT)));
 
 $web_root = $web_root.$folder;
 
@@ -39,6 +39,15 @@ if(!empty($config['app']['service'])) {
 		}
 	}
 }
+
+// Load Service Provider Class
+require_once 'core/ServiceProvider.php';
+
+// Load View Class
+require_once 'core/View.php';
+
+// Load
+require_once 'core/Load.php';
 
 // Middleware
 require_once 'core/MiddleWares.php';
@@ -74,6 +83,7 @@ if(!empty($allHelper)) {
 require_once './app/app.php'; // Load app
 
 require_once './core/Model.php'; // Load base model
+require_once './core/Template.php'; // Load Template
 require_once './core/Controller.php'; // Load base controller
 require_once './core/Request.php'; // Load request
 require_once './core/Response.php'; // Load response

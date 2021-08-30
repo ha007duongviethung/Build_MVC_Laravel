@@ -52,8 +52,11 @@ class App
 		$url = $this->__route->handleRoute($url);
 
 		// Middleware app
-		$this->handleGlobalMiddleware();
-		$this->handleRouteMiddleware($this->__route->getUri());
+		$this->handleGlobalMiddleware($this->__db);
+		$this->handleRouteMiddleware($this->__route->getUri(), $this->__db);
+
+		// App service provider
+		$this->handleAppServiceProvider($this->__db);
 
 		$urlArr = array_filter(explode('/', $url));
 		$urlArr = array_values($urlArr);
@@ -136,7 +139,7 @@ class App
 		require_once './app/errors/'.$name.'.php';
 	}
 
-	public function handleRouteMiddleware($routeKey) {
+	public function handleRouteMiddleware($routeKey, $db) {
 		global $config;
 		$routeKey = trim($routeKey);
 		if(!empty($config['app']['routeMiddleware'])) {
@@ -146,6 +149,9 @@ class App
 					require_once 'app/middlewares/'.$middlewareItem.'.php';
 					if(class_exists($middlewareItem)) {
 						$middlewareObject = new $middlewareItem();
+						if(!empty($db)) {
+							$middlewareObject->db = $db;
+						}
 						$middlewareObject->handle();
 					}
 				}
@@ -153,7 +159,7 @@ class App
 		}
 	}
 
-	public function handleGlobalMiddleware() {
+	public function handleGlobalMiddleware($db) {
 		global $config;
 
 		if(!empty($config['app']['globalMiddleware'])) {
@@ -163,7 +169,32 @@ class App
 					require_once 'app/middlewares/'.$middlewareItem.'.php';
 					if(class_exists($middlewareItem)) {
 						$middlewareObject = new $middlewareItem();
+						if(!empty($db)) {
+							$middlewareObject->db = $db;
+						}
 						$middlewareObject->handle();
+					}
+				}
+			}
+		}
+	}
+
+	public function handleAppServiceProvider($db) {
+		global $config;
+
+		if(!empty($config['app']['boot'])) {
+			$serviceProviderArr = $config['app']['boot'];
+			foreach ($serviceProviderArr as $key => $serviceName) {
+				if(file_exists('app/core/'.$serviceName.'.php')) {
+					require_once 'app/core/'.$serviceName.'.php';
+					if(class_exists($serviceName)) {
+						$serviceObject = new $serviceName();
+						
+						if(!empty($db)) {
+							$serviceObject->db = $db;
+						}
+
+						$serviceObject->boot();
 					}
 				}
 			}

@@ -1,4 +1,6 @@
 <?php 
-abstract class Middlewares {	
+abstract class Middlewares {
+	public $db;
+
 	abstract function handle();
 }

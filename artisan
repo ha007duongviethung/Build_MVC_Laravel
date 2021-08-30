@@ -1,0 +1,53 @@
+<?php
+if(!empty($_SERVER['argv'][1])) {
+
+	// Create Controller
+	if($_SERVER['argv'][1] == 'make:controller') {
+		if(!empty($_SERVER['argv'][2])) {
+			// Get controller name
+			$controllerName = $_SERVER['argv'][2];
+
+			// Check controller exits
+			if(!file_exists('app/controllers/'.$controllerName.'.php')) {
+				
+				$data = '<?php
+
+class '.$controllerName.' extends Controller { 
+
+	public $data = [];
+	public $model = [];
+
+	public function __construct() {
+		// Construct
+	}
+
+	pubic function index() {
+		// Index
+	}
+
+}';
+
+				file_put_contents('app/controllers/'.$controllerName.'.php', $data);
+
+				echo "\033[32mMake controller $controllerName success\033[0m\n"; 
+			} else {
+				echo "\033[31mController $controllerName already exist\033[0m\n";
+			}
+		}
+	}
+
+	// Delete Controller
+	if($_SERVER['argv'][1] == 'delete:controller') {
+		if(!empty($_SERVER['argv'][2])) {
+			// Get controller name
+			$controllerName = $_SERVER['argv'][2];
+
+			if(!file_exists('app/controllers/'.$controllerName.'.php')) {
+				echo "\033[31mController $controllerName does not exist\033[0m\n";
+			} else {
+				unlink('app/controllers/'.$controllerName.'.php');
+				echo "\033[32mDelete controller $controllerName successn\033[0m\n";
+			}
+		}
+	}
+}

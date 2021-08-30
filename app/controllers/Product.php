@@ -33,6 +33,7 @@ class Product extends Controller
 		$this->data['sub_content']['title'] = 'Product Detail';
 		$this->data['page_title'] = 'Product Detail';
 		$this->data['content'] = 'products/detail';
+
 		$this->render('layouts/client_layout', $this->data);
 	}
 	
